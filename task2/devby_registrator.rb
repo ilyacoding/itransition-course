@@ -61,8 +61,8 @@ class DevbyRegistrator
       fill_in('user[password_confirmation]', with: password)
       check("user_agreement")
       find(".blue.btn.submit").click
-      break unless page.html.include? "Юзернейм уже существует"
-      break unless page.html.include? "Емейл адрес уже существует"
+      break if page.html.include? "icon-dev-a-success"
+      delete_email(email_credentials['key'])
     end
 
     wait_email(email_credentials['key'])

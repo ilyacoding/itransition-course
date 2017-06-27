@@ -4,10 +4,10 @@ if ARGV.length.zero?
   puts "Too few arguments"
   exit
 end
-
+puts "Login Password"
 object = DevbyRegistrator.new
 
-ARGV[0].to_i.times do |i|
+ARGV[0].to_i.times do
   user = object.register
-  puts "#{i + 1}) #{user[:login]} => #{user[:password]}"
+  puts "#{user[:login]} #{user[:password]}"
 end
