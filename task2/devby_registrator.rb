@@ -22,15 +22,11 @@ class DevbyRegistrator
   def delete_email(key)
     uri = URI.parse("https://post-shift.ru/api.php?action=delete&key=#{key}")
     response = Net::HTTP.get_response(uri)
-    if response.body == "OK"
-      true
-    else
-      false
-    end
+    response.body == 'OK'
   end
 
   def wait_email(key)
-    while true
+    loop do
       uri = URI.parse("https://post-shift.ru/api.php?action=getlist&key=#{key}&type=json")
       response = Net::HTTP.get_response(uri)
       list = JSON.parse(response.body)
@@ -46,28 +42,28 @@ class DevbyRegistrator
   end
 
   def get_link(str)
-    str.match(/< ?([^>]+) ?>\Z/)[1].sub("=3D", "=")
+    str.match(/< ?([^>]+) ?>\Z/)[1].sub('=3D', '=')
   end
 
   def register
-    while true
+    loop do
       login = SecureRandom.hex(8)
       password = SecureRandom.hex(8)
-      visit("http://dev.by/registration")
+      visit('http://dev.by/registration')
       email_credentials = create_email()
       fill_in('user[username]', with: login)
       fill_in('user[email]', with: email_credentials['email'])
       fill_in('user[password]', with: password)
       fill_in('user[password_confirmation]', with: password)
-      check("user_agreement")
-      find(".blue.btn.submit").click
-      break if page.html.include? "icon-dev-a-success"
+      check('user_agreement')
+      find('.blue.btn.submit').click
+      break if page.html.include? 'icon-dev-a-success'
       delete_email(email_credentials['key'])
     end
 
     wait_email(email_credentials['key'])
     confirm(email_credentials['key'])
     delete_email(email_credentials['key'])
-    { :login => login, :password => password }
+    { login: login, password: password }
   end
 end
